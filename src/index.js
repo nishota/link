@@ -2,16 +2,18 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import * as serviceWorker from './serviceWorker';
+import request from 'superagent';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+const req = new Promise((resolve,reject) =>{
+  request.get('/data.json').end((err,data)=>{
+      if(err){
+          reject('there are errors.');
+      }
+      if(!data) {
+          reject('there is no resource files.');
+      }
+      console.log(data.body);
+      resolve(data.body.result);
+})});
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+req.then(result => ReactDOM.render(<React.StrictMode><App input={result}/></React.StrictMode>,document.getElementById('root')));
